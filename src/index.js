@@ -9,8 +9,8 @@ app.get('/', (req, res) => {
 
 app.get('/hello', (req, res) => {
     const { name } = req.query;
-    const greating = name ? `Hello, ${name}!` : 'Hello World!';
-    res.send(greating)
+    const greeting = name ? `Hello, ${name}!` : 'Hello World!';
+    res.send(greeting)
 })
 
 app.get('/users', (req, res) => {
