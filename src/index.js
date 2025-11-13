@@ -7,6 +7,20 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
+app.get('/hello', (req, res) => {
+    const { name } = req.query;
+    const greating = name ? `Hello, ${name}!` : 'Hello World!';
+    res.send(greating)
+})
+
+app.get('/users', (req, res) => {
+    res.send('GET /users')
+})
+
+app.post('/users', (req, res) => {
+    res.send('POST /users')
+})
+
 app.listen({ port }, () => {
     console.log(`Example app listening on port ${port}`)
 })
