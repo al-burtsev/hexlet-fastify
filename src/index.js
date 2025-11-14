@@ -49,10 +49,23 @@ app.post('/users', (req, res) => {
 })
 
 app.get('/courses', (req, res) => {
+    const term = req.query.term
+    let filteredCourses = coursesState.courses;
+
+    if (term && term.trim() !== '') {
+        const cleanTerm = term.trim().toLowerCase();
+        filteredCourses = coursesState.courses.filter(({ title, description }) =>
+            title.toLowerCase().includes(cleanTerm) ||
+            description.toLowerCase().includes(cleanTerm)
+        );
+    }
+
     const data = {
-        courses: coursesState.courses, // Где-то хранится список курсов
+        term,
+        courses: filteredCourses, // Где-то хранится список курсов
         header: 'Курсы по программированию',
     }
+
     res.view('src/views/courses/index', data)
 })
 

@@ -2,6 +2,10 @@ extends ../layouts/page.pug
 
 block content
   h1= header
+  form(role = 'form' method = 'GET' action = '/courses')
+    label(for='search') Найти по названию: 
+    input(type='search' name='term', value = term, id='search')
+    input(type='submit' value='search')
   if courses.length === 0
     p Пока не добавлено ни одного курса
   else
@@ -9,3 +13,4 @@ block content
       div
         h2
           a(href=`/courses/${course.id}`) #{course.title}
+        p #{course.description}
