@@ -1,4 +1,4 @@
-export const state = {
+export default {
     users: [
         {
             id: 1,
