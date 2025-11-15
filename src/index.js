@@ -1,4 +1,5 @@
 import fastify from 'fastify'
+import formbody from '@fastify/formbody'
 import view from '@fastify/view'
 import pug from 'pug'
 
@@ -10,6 +11,7 @@ const port = 3000
 
 // Подключаем pug через плагин
 await app.register(view, { engine: { pug } })
+await app.register(formbody)
 
 // Обработчик главной страницы
 app.get('/', (req, res) => res.view('src/views/index'));
@@ -20,8 +22,11 @@ app.get('/hello', (req, res) => {
     res.send(greeting)
 })
 
+// Обработчики пользователей
 app.get('/users', (req, res) => {
-    res.send('GET /users')
+    const users = usersState.users
+    console.log(users)
+    res.view('src/views/users/index', { users })
 })
 
 app.get('/users/:id', (req, res) => {
@@ -30,10 +35,9 @@ app.get('/users/:id', (req, res) => {
 
     if (!user) {
         res.code(404).send({ message: 'User not found' })
+        return
     }
-    else {
-        res.send(user)
-    }
+    res.view('src/views/users/show', { user })
 })
 
 app.get('/users/:id/post', (req, res) => {
@@ -44,10 +48,24 @@ app.get('/users/:id/post/:postId', (req, res) => {
     res.send(`User ID: ${req.params.id}; Post ID: ${req.params.postId}`)
 })
 
-app.post('/users', (req, res) => {
-    res.send('POST /users')
+app.get('/users/new', (req, res) => {
+    res.view('src/views/users/new')
 })
 
+app.post('/users', (req, res) => {
+    const user = {
+        name: req.body.name.trim(),
+        email: req.body.email.trim().toLowerCase(),
+        password: req.body.password,
+        id: Date.now()
+    }
+
+    usersState.users.push(user)
+
+    res.redirect('/users')
+})
+
+// Обработчики курсов
 app.get('/courses', (req, res) => {
     const term = req.query.term
     let filteredCourses = coursesState.courses;
@@ -80,6 +98,22 @@ app.get('/courses/:id', (req, res) => {
         course,
     }
     res.view('src/views/courses/show', data)
+})
+
+app.get('/courses/new', (req, res) => {
+    res.view('src/views/courses/new')
+})
+
+app.post('/courses', (req, res) => {
+    const course = {
+        title: req.body.title.trim(),
+        description: req.body.description.trim(),
+        id: Date.now()
+    }
+
+    coursesState.courses.push(course)
+
+    res.redirect('/courses')
 })
 
 app.listen({ port }, () => {

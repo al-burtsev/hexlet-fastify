@@ -1,3 +1,12 @@
 extends ../layouts/page.pug
 
 block content
+  form(action = '/courses', method = 'post')
+    div
+    label Название:
+        input(type = 'text', name = 'title')
+    div
+    label Описание:
+        input(type = 'text', name = 'description')
+    div
+    input(type = 'submit', value = 'Добавить')
