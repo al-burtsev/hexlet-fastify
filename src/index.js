@@ -2,6 +2,7 @@ import fastify from 'fastify'
 import formbody from '@fastify/formbody'
 import view from '@fastify/view'
 import pug from 'pug'
+import yup from 'yup'
 
 import usersState from './users.js'
 import coursesState from './courses.js'
@@ -52,11 +53,47 @@ app.get('/users/new', (req, res) => {
     res.view('src/views/users/new')
 })
 
-app.post('/users', (req, res) => {
+app.post('/users', {
+    attachValidation: true,
+    schema: {
+        body: yup.object({
+            name: yup.string().min(2, 'Имя должно быть не меньше 2 символов'),
+            email: yup.string().email(),
+            password: yup.string().min(5),
+            passwordConfirmation: yup.string().min(5),
+        }),
+    },
+    validatorCompiler: ({ schema, method, url, httpPart }) => (data) => {
+        if (data.password !== data.passwordConfirmation) {
+            return {
+                error: Error('Password confirmation is not equal the password'),
+            }
+        }
+        try {
+            const result = schema.validateSync(data)
+            return { value: result }
+        }
+        catch (e) {
+            return { error: e }
+        }
+    },
+}, (req, res) => {
+    const { name, email, password, passwordConfirmation } = req.body
+
+    if (req.validationError) {
+        const data = {
+            name, email, password, passwordConfirmation,
+            error: req.validationError,
+        }
+
+        res.view('src/views/users/new', data)
+        return
+    }
+
     const user = {
-        name: req.body.name.trim(),
-        email: req.body.email.trim().toLowerCase(),
-        password: req.body.password,
+        name,
+        email,
+        password,
         id: Date.now()
     }
 
@@ -104,10 +141,50 @@ app.get('/courses/new', (req, res) => {
     res.view('src/views/courses/new')
 })
 
-app.post('/courses', (req, res) => {
+// app.post('/courses', (req, res) => {
+//     const course = {
+//         title: req.body.title.trim(),
+//         description: req.body.description.trim(),
+//         id: Date.now()
+//     }
+
+//     coursesState.courses.push(course)
+
+//     res.redirect('/courses')
+// })
+
+app.post('/courses', {
+    attachValidation: true,
+    schema: {
+        body: yup.object({
+            title: yup.string().min(2, 'Название курса должно быть не меньше 2 символов'),
+            description: yup.string().min(10, 'Описание курса должно быть не меньше 10 символов'),
+        }),
+    },
+    validatorCompiler: ({ schema, method, url, httpPart }) => (data) => {
+        try {
+            const result = schema.validateSync(data)
+            return { value: result }
+        }
+        catch (e) {
+            return { error: e }
+        }
+    },
+}, (req, res) => {
+    const { title, description } = req.body
+
+    if (req.validationError) {
+        const data = {
+            title, description,
+            error: req.validationError,
+        }
+
+        res.view('src/views/courses/new', data)
+        return
+    }
+
     const course = {
-        title: req.body.title.trim(),
-        description: req.body.description.trim(),
+        title, description,
         id: Date.now()
     }
 
