@@ -6,12 +6,19 @@ import yup from 'yup'
 
 import usersState from './users.js'
 import coursesState from './courses.js'
+// Маршруты
+import routes from './routes/index.js'
 
 const app = fastify()
 const port = 3000
 
 // Подключаем pug через плагин
-await app.register(view, { engine: { pug } })
+await app.register(view, {
+    engine: { pug },
+    defaultContext: {
+        routes,
+    },
+})
 await app.register(formbody)
 
 // Обработчик главной страницы
@@ -24,13 +31,12 @@ app.get('/hello', (req, res) => {
 })
 
 // Обработчики пользователей
-app.get('/users', (req, res) => {
+app.get(routes.usersPath(), (req, res) => {
     const users = usersState.users
-    console.log(users)
-    res.view('src/views/users/index', { users })
+    res.view('src/views/users/index', { users, routes })
 })
 
-app.get('/users/:id', (req, res) => {
+app.get(routes.userPath(':id'), (req, res) => {
     const { id } = req.params
     const user = usersState.users.find(user => user.id === parseInt(id))
 
@@ -38,7 +44,7 @@ app.get('/users/:id', (req, res) => {
         res.code(404).send({ message: 'User not found' })
         return
     }
-    res.view('src/views/users/show', { user })
+    res.view('src/views/users/show', { user, routes })
 })
 
 app.get('/users/:id/post', (req, res) => {
@@ -49,11 +55,11 @@ app.get('/users/:id/post/:postId', (req, res) => {
     res.send(`User ID: ${req.params.id}; Post ID: ${req.params.postId}`)
 })
 
-app.get('/users/new', (req, res) => {
-    res.view('src/views/users/new')
+app.get(routes.newUserPath(), (_req, res) => {
+    res.view('src/views/users/new', { routes })
 })
 
-app.post('/users', {
+app.post(routes.usersPath(), {
     attachValidation: true,
     schema: {
         body: yup.object({
@@ -103,7 +109,7 @@ app.post('/users', {
 })
 
 // Обработчики курсов
-app.get('/courses', (req, res) => {
+app.get(routes.coursesPath(), (req, res) => {
     const term = req.query.term
     let filteredCourses = coursesState.courses;
 
@@ -124,7 +130,7 @@ app.get('/courses', (req, res) => {
     res.view('src/views/courses/index', data)
 })
 
-app.get('/courses/:id', (req, res) => {
+app.get(routes.coursePath(':id'), (req, res) => {
     const { id } = req.params
     const course = coursesState.courses.find(({ id: courseId }) => courseId === parseInt(id))
     if (!course) {
@@ -133,25 +139,14 @@ app.get('/courses/:id', (req, res) => {
     }
     const data = {
         course,
+        routes
     }
     res.view('src/views/courses/show', data)
 })
 
-app.get('/courses/new', (req, res) => {
-    res.view('src/views/courses/new')
+app.get(routes.newCoursePath(), (_req, res) => {
+    res.view('src/views/courses/new', { routes })
 })
-
-// app.post('/courses', (req, res) => {
-//     const course = {
-//         title: req.body.title.trim(),
-//         description: req.body.description.trim(),
-//         id: Date.now()
-//     }
-
-//     coursesState.courses.push(course)
-
-//     res.redirect('/courses')
-// })
 
 app.post('/courses', {
     attachValidation: true,

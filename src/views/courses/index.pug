@@ -2,7 +2,7 @@ extends ../layouts/page.pug
 
 block content
   h1= header
-  form(role = 'form' method = 'GET' action = '/courses')
+  form(role = 'form' method = 'GET' action = routes.coursesPath())
     label(for='search') Найти по названию: 
     input(type='search' name='term', value = term, id='search')
     input(type='submit' value='search')
@@ -12,5 +12,5 @@ block content
     each course in courses
       div
         h2
-          a(href=`/courses/${course.id}`) #{course.title}
+          a(href=routes.coursePath(course.id)) #{course.title}
         p #{course.description}

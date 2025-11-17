@@ -7,8 +7,8 @@ html
     header
       nav
         a(href='/') Главная
-        a(href='/courses') Курсы
-        a(href='/users') Пользователи
+        a(href=routes.coursesPath()) Курсы
+        a(href=routes.usersPath()) Пользователи
     main
       block content
     footer

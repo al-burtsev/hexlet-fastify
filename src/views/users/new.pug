@@ -3,7 +3,7 @@ extends ../layouts/page.pug
 block content
   if error
     p= error.message
-  form(action = '/users', method = 'post')
+  form(action = routes.usersPath(), method = 'post')
     div
       label Имя:
         input(type = 'text', name = 'name', value = name)
@@ -15,5 +15,5 @@ block content
         input(type = 'password', name = 'password', value = password, required = true)
     div
       label Подтверждение пароля:
-        input(type = 'password', name = 'passwordConfirmation', value =passwordConfirmation,  required = true)
+        input(type = 'password', name = 'passwordConfirmation', value = passwordConfirmation,  required = true)
     input(type = 'submit', value = 'Зарегистрировать')
