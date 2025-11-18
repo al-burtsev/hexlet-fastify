@@ -1,6 +1,7 @@
 extends ../layouts/page.pug
 
 block content
+  a(href=routes.newCoursePath()) Добавить новый курс
   h1= header
   form(role = 'form' method = 'GET' action = routes.coursesPath())
     label(for='search') Найти по названию: 
