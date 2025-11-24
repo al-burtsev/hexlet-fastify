@@ -1,4 +1,6 @@
 import fastify from 'fastify'
+import middie from '@fastify/middie'
+import morgan from 'morgan'
 import formbody from '@fastify/formbody'
 import view from '@fastify/view'
 import pug from 'pug'
@@ -9,6 +11,11 @@ import addRoutes from './routes/index.js';
 
 const app = fastify()
 const port = 3000
+
+const logger = morgan('combined')
+await app.register(middie)
+
+app.use(logger)
 
 await app.register(view, {
     engine: { pug },

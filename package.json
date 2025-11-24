@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "@fastify/formbody": "^8.0.2",
+    "@fastify/middie": "^9.0.3",
     "@fastify/view": "^11.1.1",
     "fastify": "^5.6.2",
     "fastify-cli": "^7.4.1",
+    "morgan": "^1.10.1",
     "pug": "^3.0.3",
     "yup": "^1.7.1"
   }
