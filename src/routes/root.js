@@ -1,9 +1,11 @@
 export default (app, db) => {
     // Главная страница
     app.get('/', (req, res) => {
+        const visited = req.cookies.visited
         const templateData = {
-            // flash: res.flash(),
-        };
+            visited,
+        }
+        res.cookie('visited', true)
         res.view('index', templateData);
     });
 };
